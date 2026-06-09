@@ -68,25 +68,8 @@ async function getMe(req, res) {
   }
 }
 
-async function updateUserRole(req, res) {
-  const { role } = req.body;
-  const validRoles = ['GUEST', 'MEMBER', 'ADMIN'];
-
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ error: 'Invalid role' });
-  }
-
-  try {
-    const user = await db.updateUserRole(req.params.id, role);
-    res.json({ user });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
 module.exports = { 
   register,
   login,
-  getMe,
-  updateUserRole
+  getMe
 };

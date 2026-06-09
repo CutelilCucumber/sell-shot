@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 const express = require("express");
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const authRouter = require('./routes/authRouter');
 const itemRouter = require('./routes/itemRouter');
@@ -12,7 +13,8 @@ const adminRouter = require('./routes/adminRouter');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:5173'] }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
