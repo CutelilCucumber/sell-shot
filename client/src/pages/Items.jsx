@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
+import Loader from '../components/Loader';
 
 const STATUS_COLORS = {
   DRAFT: 'status--draft',
@@ -33,7 +34,7 @@ export default function Items() {
     }
   }
 
-  if (loading) return <div className="page-status">Loading items...</div>;
+  if (loading) return <Loader/>;
   if (error) return <div className="page-status page-status--error">{error}</div>;
 
   return (

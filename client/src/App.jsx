@@ -5,12 +5,13 @@ import Landing from './pages/Landing';
 import Items from './pages/Items';
 import ItemDetail from './pages/ItemDetail';
 import ItemForm from './pages/ItemForm';
+import Loader from './components/Loader';
 import { Login, Register } from './pages/Auth';
 import './App.css';
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="page-status">Loading...</div>;
+  if (loading) return <Loader/>;
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }

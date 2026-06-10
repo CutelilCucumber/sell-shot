@@ -1203,39 +1203,33 @@ a:hover { color: var(--accent-hover); }
   margin: 1.5rem 0 0;
 }
 
-/* From Uiverse.io by Nawsome */ 
-.pl {
-  width: 8em;
-  height: 8em;
+/* From Uiverse.io by Codecite */ 
+.spinner-container {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 30px auto;
+  overflow: hidden;
 }
 
-.pl circle {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
+.spinner {
+  position: absolute;
+  width: calc(100% - 9.9px);
+  height: calc(100% - 9.9px);
+  border: 5px solid transparent;
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 5s cubic-bezier(0.17, 0.49, 0.96, 0.79) infinite;
 }
 
-.pl__ring1 {
-  animation: ring1_ 4s 0s ease-in-out infinite;
-}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
 
-.pl__ring2 {
-  animation: ring2_ 4s 0.04s ease-in-out infinite;
-}
-
-.pl__ring3 {
-  animation: ring3_ 4s 0.08s ease-in-out infinite;
-}
-
-.pl__ring4 {
-  animation: ring4_ 4s 0.12s ease-in-out infinite;
-}
-
-.pl__ring5 {
-  animation: ring5_ 4s 0.16s ease-in-out infinite;
-}
-
-.pl__ring6 {
-  animation: ring6_ 4s 0.2s ease-in-out infinite;
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Animations */

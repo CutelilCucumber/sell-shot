@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../api';
+import Loader from '../components/Loader';
 
 const CONDITIONS = ['new_with_tags', 'like_new', 'good', 'fair', 'poor'];
 const CATEGORIES = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accessories', 'other'];
@@ -128,7 +129,7 @@ export default function ItemForm() {
     }
   }
 
-  if (loading) return <div className="page-status">Loading...</div>;
+  if (loading) return <Loader/>;
 
   return (
     <main className="form-page">

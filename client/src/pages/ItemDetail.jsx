@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../api';
+import Loader from '../components/Loader';
 
 const STATUS_LABEL = {
   DRAFT: 'Draft', PENDING: 'Pending', ACTIVE: 'Active',
@@ -77,7 +78,7 @@ export default function ItemDetail() {
     }
   }
 
-  if (loading) return <div className="page-status">Loading...</div>;
+  if (loading) return <Loader />;
   if (error) return <div className="page-status page-status--error">{error}</div>;
   if (!item) return <div className="page-status">Item not found.</div>;
 
