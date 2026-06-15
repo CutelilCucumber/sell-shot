@@ -120,166 +120,195 @@ export default function ItemForm() {
   if (loading) return <Loader/>;
 
   return (
-    <main className="form-page">
-      <div className="form-nav">
-        <Link to={isNew ? '/items' : `/items/${id}`} className="detail-back">
-          ← {isNew ? 'My items' : 'Back to item'}
-        </Link>
-        <h1 className="form-page__title">{isNew ? 'New item' : 'Edit item'}</h1>
-      </div>
+  <main className="form-page">
+    <div className="form-nav">
+      <Link to="/items" className="detail-back">
+        ← Back
+      </Link>
+      <h1 className="form-page__title">Item Details</h1>
+    </div>
 
-      <div className="form-layout">
-        <form className="item-form" onSubmit={handleSubmit}>
-          {error && <p className="form-error">{error}</p>}
+    <div className="form-layout">
+      <form className="item-form" onSubmit={handleSubmit}>
+        {error && <p className="form-error">{error}</p>}
 
-          <div className="form-section">
-            <h2 className="form-section__title">Details</h2>
+        <div className="form-section">
+          <h2 className="form-section__title">Details</h2>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Title</label>
-                <input className="form-input" name="title" value={form.title} onChange={handleChange} placeholder="e.g. Vintage Levi's 501 Jeans" />
-              </div>
-            </div>
-
-            <div className="form-row form-row--2">
-              <div className="form-group">
-                <label className="form-label">Brand</label>
-                <input className="form-input" name="brand" value={form.brand} onChange={handleChange} placeholder="e.g. Levi's" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Category</label>
-                <select className="form-input" name="category" value={form.category} onChange={handleChange}>
-                  <option value="">Select...</option>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-row form-row--3">
-              <div className="form-group">
-                <label className="form-label">Size</label>
-                <input className="form-input" name="size" value={form.size} onChange={handleChange} placeholder="M, 32, etc." />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Color</label>
-                <input className="form-input" name="color" value={form.color} onChange={handleChange} placeholder="e.g. indigo" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Condition</label>
-                <select className="form-input" name="condition" value={form.condition} onChange={handleChange}>
-                  <option value="">Select...</option>
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-row form-row--2">
-              <div className="form-group">
-                <label className="form-label">Estimated price (USD)</label>
-                <input className="form-input" name="estimatedPrice" type="number" step="0.01" min="0" value={form.estimatedPrice} onChange={handleChange} placeholder="0.00" />
-              </div>
-            </div>
-
+          <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Description</label>
-              <textarea className="form-input form-input--textarea" name="description" rows={4} value={form.description} onChange={handleChange} placeholder="Describe the item for your listing..." />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Tags</label>
-              <div className="tag-input-row">
-                <input
-                  className="form-input"
-                  value={tagInput}
-                  onChange={e => setTagInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addTag(e)}
-                  placeholder="Add a tag and press Enter"
-                />
-                <button className="btn btn--ghost btn--sm" onClick={addTag} type="button">Add</button>
-              </div>
-              {form.tags.length > 0 && (
-                <div className="tag-chips">
-                  {form.tags.map(tag => (
-                    <span key={tag} className="tag-chip">
-                      #{tag}
-                      <button type="button" className="tag-chip__remove" onClick={() => removeTag(tag)}>✕</button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button className="btn btn--primary" type="submit" disabled={saving}>
-              {saving ? 'Saving...' : isNew ? 'Create item' : 'Save changes'}
-            </button>
-            <Link to={isNew ? '/items' : `/items/${id}`} className="btn btn--ghost">Cancel</Link>
-          </div>
-        </form>
-
-        {!isNew && (
-          <div className="form-images">
-            <div className="form-section__title-row">
-              <h2 className="form-section__title">Images</h2>
-              <button
-                type="button"
-                className="btn btn--ghost btn--sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                {uploading ? 'Uploading...' : '+ Add images'}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleImageUpload}
+              <label className="form-label">Title</label>
+              <input 
+                className="form-input" 
+                name="title" 
+                value={form.title} 
+                onChange={handleChange} 
+                placeholder="e.g. Vintage Levi's 501 Jeans" 
               />
             </div>
+          </div>
 
-            {images.length === 0 ? (
-              <div className="images-empty">
-                <p>No images yet</p>
-                <button type="button" className="btn btn--ghost btn--sm" onClick={() => fileInputRef.current?.click()}>
-                  Upload images
-                </button>
-              </div>
-            ) : (
-              <div className="images-grid">
-                {images.map(img => (
-                  <div key={img.id} className={`image-thumb ${img.isPrimary ? 'image-thumb--primary' : ''}`}>
-                    <img src={img.url} alt="" className="image-thumb__img" />
-                    <div className="image-thumb__overlay">
-                      {!img.isPrimary && (
-                        <button className="image-thumb__btn" onClick={() => handleSetPrimary(img.id)}>
-                          Set primary
-                        </button>
-                      )}
-                      {img.isPrimary && <span className="image-thumb__primary-label">Primary</span>}
-                      <button className="image-thumb__btn image-thumb__btn--danger" onClick={() => handleDeleteImage(img.id)}>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
+          <div className="form-row form-row--2">
+            <div className="form-group">
+              <label className="form-label">Brand</label>
+              <input 
+                className="form-input" 
+                name="brand" 
+                value={form.brand} 
+                onChange={handleChange} 
+                placeholder="e.g. Levi's" 
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Category</label>
+              <select className="form-input" name="category" value={form.category} onChange={handleChange}>
+                <option value="">Select...</option>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="form-row form-row--3">
+            <div className="form-group">
+              <label className="form-label">Size</label>
+              <input 
+                className="form-input" 
+                name="size" 
+                value={form.size} 
+                onChange={handleChange} 
+                placeholder="M, 32, etc." 
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Color</label>
+              <input 
+                className="form-input" 
+                name="color" 
+                value={form.color} 
+                onChange={handleChange} 
+                placeholder="e.g. indigo" 
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Condition</label>
+              <select className="form-input" name="condition" value={form.condition} onChange={handleChange}>
+                <option value="">Select...</option>
+                {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="form-row form-row--2">
+            <div className="form-group">
+              <label className="form-label">Estimated price (USD)</label>
+              <input 
+                className="form-input" 
+                name="estimatedPrice" 
+                type="number" 
+                step="0.01" 
+                min="0" 
+                value={form.estimatedPrice} 
+                onChange={handleChange} 
+                placeholder="0.00" 
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <textarea 
+              className="form-input form-input--textarea" 
+              name="description" 
+              rows={4} 
+              value={form.description} 
+              onChange={handleChange} 
+              placeholder="Describe the item for your listing..." 
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Tags</label>
+            <div className="tag-input-row">
+              <input
+                className="form-input"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addTag(e)}
+                placeholder="Add a tag and press Enter"
+              />
+              <button className="btn btn--ghost btn--sm" onClick={addTag} type="button">Add</button>
+            </div>
+            {form.tags.length > 0 && (
+              <div className="tag-chips">
+                {form.tags.map(tag => (
+                  <span key={tag} className="tag-chip">
+                    #{tag}
+                    <button type="button" className="tag-chip__remove" onClick={() => removeTag(tag)}>✕</button>
+                  </span>
                 ))}
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {isNew && (
-          <div className="form-images form-images--hint">
-            <div className="images-hint">
-              <span className="images-hint__icon">◈</span>
-              <p>Save the item first, then add images.</p>
-            </div>
+        <div className="form-actions">
+          <button className="btn btn--primary" type="submit" disabled={saving}>
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+          <Link to="/items" className="btn btn--ghost">Cancel</Link>
+        </div>
+      </form>
+
+      <div className="form-images">
+        <div className="form-section__title-row">
+          <h2 className="form-section__title">Images</h2>
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : '+ Add images'}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleImageUpload}
+          />
+        </div>
+
+        {images.length === 0 ? (
+          <div className="images-empty">
+            <p>No images yet</p>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={() => fileInputRef.current?.click()}>
+              Upload images
+            </button>
+          </div>
+        ) : (
+          <div className="images-grid">
+            {images.map(img => (
+              <div key={img.id} className={`image-thumb ${img.isPrimary ? 'image-thumb--primary' : ''}`}>
+                <img src={img.url} alt="" className="image-thumb__img" />
+                <div className="image-thumb__overlay">
+                  {!img.isPrimary && (
+                    <button className="image-thumb__btn" onClick={() => handleSetPrimary(img.id)}>
+                      Set primary
+                    </button>
+                  )}
+                  {img.isPrimary && <span className="image-thumb__primary-label">Primary</span>}
+                  <button className="image-thumb__btn image-thumb__btn--danger" onClick={() => handleDeleteImage(img.id)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
-    </main>
-  );
+    </div>
+  </main>
+);
 }
