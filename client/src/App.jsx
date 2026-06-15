@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Items from './pages/Items';
 import ItemDetail from './pages/ItemDetail';
 import ItemForm from './pages/ItemForm';
+import ItemUpload from './pages/ItemUpload';
 import Loader from './components/Loader';
 import { Login, Register } from './pages/Auth';
 import './App.css';
@@ -26,7 +27,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/items" element={<RequireAuth><Items /></RequireAuth>} />
-          <Route path="/items/new" element={<RequireAuth><ItemForm /></RequireAuth>} />
+          <Route path="/items/new" element={<RequireAuth><ItemUpload /></RequireAuth>} />
           <Route path="/items/:id" element={<RequireAuth><ItemDetail /></RequireAuth>} />
           <Route path="/items/:id/edit" element={<RequireAuth><ItemForm /></RequireAuth>} />
         </Routes>
