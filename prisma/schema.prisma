@@ -6,6 +6,88 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  role      Role     @default(GUEST)
+  hash      String
+  salt      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id             String    @id @default(cuid())
+  title          String?
+  description    String?
+  brand          String?
+  category       String?
+  size           String?
+  color          String?
+  condition      String?
+  estimatedPrice Decimal?  @db.Decimal(10, 2)
+  aiIdentified   Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  authorId       String
+  images         Image[]
+  author         User      @relation(fields: [authorId], references: [id])
+  tags           ItemTag[]
+  listings       Listing[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  itemId    String
+  url       String
+  fileName  String?
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model Listing {
+  id            String        @id @default(cuid())
+  itemId        String
+  marketplaceId String
+  externalId    String?
+  title         String
+  description   String
+  listingPrice  Decimal?      @db.Decimal(10, 2)
+  status        ListingStatus @default(DRAFT)
+  listedAt      DateTime?
+  soldAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  item          Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  marketplace   Marketplace   @relation(fields: [marketplaceId], references: [id])
+}
+
+model Marketplace {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  listings  Listing[]
+}
+
+model Tag {
+  id    String    @id @default(cuid())
+  name  String    @unique
+  items ItemTag[]
+}
+
+model ItemTag {
+  itemId String
+  tagId  String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, tagId])
+}
+
 enum Role {
   GUEST
   MEMBER
@@ -19,123 +101,4 @@ enum ListingStatus {
   SOLD
   EXPIRED
   REMOVED
-}
-
-model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  email     String   @unique
-  role      Role     @default(GUEST)
-
-  hash      String
-  salt      String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relation: A user can have many items
-  items     Item[]
-}
-
-model Item {
-  id              String    @id @default(cuid())
-  title           String?
-  description     String?
-
-  brand           String?
-  category        String?
-  size            String?
-  color           String?
-
-  condition       String?
-
-  estimatedPrice  Decimal?  @db.Decimal(10, 2)
-
-  aiIdentified    Boolean   @default(false)
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-// Relation: A item can have one author & many images, tags and listings
-  images          Image[]
-  listings        Listing[]
-  tags            ItemTag[]
-  author          User  @relation(fields: [authorId], references: [id]) 
-  authorId        String
-
-  // aiTitle           String?
-// aiDescription     String?
-// confidenceScore   Float?
-}
-
-model Image {
-  id            String    @id @default(cuid())
-
-  itemId        String
-  item          Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  url           String
-  fileName      String?
-
-  isPrimary     Boolean   @default(false)
-
-  createdAt     DateTime  @default(now())
-
-  // visionAnalysis    Json?
-}
-
-model Listing {
-  id              String        @id @default(cuid())
-
-  itemId          String
-  item            Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  marketplaceId   String
-  marketplace     Marketplace   @relation(fields: [marketplaceId], references: [id])
-
-  externalId      String?
-
-  title           String
-  description     String
-
-  listingPrice    Decimal?      @db.Decimal(10, 2)
-
-  status          ListingStatus @default(DRAFT)
-
-  listedAt        DateTime?
-  soldAt          DateTime?
-
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  // marketplaceUrl    String?
-// lastSyncAt        DateTime?
-}
-
-model Marketplace {
-  id            String    @id @default(cuid())
-
-  name          String    @unique
-  slug          String    @unique
-
-  createdAt     DateTime  @default(now())
-
-  listings      Listing[]
-}
-
-model Tag {
-  id    String @id @default(cuid())
-  name  String @unique
-
-  items ItemTag[]
-}
-
-model ItemTag {
-  itemId  String
-  tagId   String
-
-  item    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  tag     Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([itemId, tagId])
 }

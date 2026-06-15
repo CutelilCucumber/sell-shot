@@ -9,7 +9,6 @@ const CATEGORIES = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accesso
 export default function ItemForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const isNew = !id;
   const fileInputRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -18,13 +17,12 @@ export default function ItemForm() {
   });
   const [images, setImages] = useState([]);
   const [tagInput, setTagInput] = useState('');
-  const [loading, setLoading] = useState(!isNew);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isNew) return;
     api.getItem(id)
       .then(data => {
         const item = data.item;
@@ -68,11 +66,6 @@ export default function ItemForm() {
 
     let itemId = id;
 
-    // if new item, create it first so we have an id
-    if (isNew && !itemId) {
-      setError('Save the item first before uploading images.');
-      return;
-    }
 
     setUploading(true);
     try {
@@ -115,13 +108,8 @@ export default function ItemForm() {
         estimatedPrice: form.estimatedPrice ? parseFloat(form.estimatedPrice) : null
       };
 
-      if (isNew) {
-        const data = await api.createItem(payload);
-        navigate(`/items/${data.item.id}/edit`);
-      } else {
-        await api.updateItem(id, payload);
-        navigate(`/items/${id}`);
-      }
+      await api.updateItem(id, payload);
+      navigate(`/items/${id}`);
     } catch (err) {
       setError(err.message);
     } finally {
