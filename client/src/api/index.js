@@ -50,6 +50,13 @@ export const api = {
   deleteImage: (itemId, imageId) =>
     request(`/items/${itemId}/images/${imageId}`, { method: 'DELETE' }),
 
+  //identify
+  identifyItem: (itemId, imageUrl) =>
+  request(`/items/${itemId}/identify`, {
+    method: 'POST',
+    body: JSON.stringify({ imageUrl })
+  }),
+  
   // listings
   getListings: (itemId) => request(`/items/${itemId}/listings`),
   createListing: (itemId, data) =>
