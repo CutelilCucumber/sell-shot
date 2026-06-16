@@ -66,7 +66,7 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="upload-page">
+    <main className="general-page">
       <div className="upload-page__header">
         <Link to="/items" className="detail-back">← My items</Link>
         <h1 className="upload-page__title">Add a new item</h1>
@@ -77,7 +77,7 @@ export default function UploadPage() {
 
       <div
         ref={dropRef}
-        className={`upload-drop ${dragging ? 'upload-drop--dragging' : ''} ${uploading ? 'upload-drop--busy' : ''}`}
+        className={`form-images ${dragging ? 'upload-drop--dragging' : ''} ${uploading ? 'upload-drop--busy' : ''}`}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}

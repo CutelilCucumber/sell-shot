@@ -83,7 +83,7 @@ export default function ItemDetail() {
   if (!item) return <div className="page-status">Item not found.</div>;
 
   return (
-    <main className="detail-page">
+    <main className="general-page">
       <div className="detail-nav">
         <Link to="/items" className="detail-back">← My items</Link>
         <Link to={`/items/${id}/edit`} className="btn btn--ghost btn--sm">Edit item</Link>

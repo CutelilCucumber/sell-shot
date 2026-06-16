@@ -34,3 +34,15 @@ async function identifyItem(imageUrl) {
 }
 
 module.exports = { identifyItem };
+// access function
+// const { identifyItem } = require('./identifyItem');
+
+//    async function run() {
+//      try {
+//        const imageUrl = 'https://example.com/sample-image.jpg'; // Replace with a real image URL
+//        const result = await identifyItem(imageUrl);
+//        console.log(result);
+//      } catch (error) {
+//        console.error('Failed to analyze image:', error);
+//      }
+//    }

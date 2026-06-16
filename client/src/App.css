@@ -544,7 +544,7 @@ a:hover { color: var(--accent-hover); }
 
 /* ── DETAIL PAGE ────────────────────────────────── */
 
-.detail-page {
+.general-page {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem;
@@ -858,12 +858,6 @@ a:hover { color: var(--accent-hover); }
 
 /* ── FORM PAGE ────────────────────────────────── */
 
-.form-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
 .form-nav {
   display: flex;
   align-items: center;
@@ -1010,6 +1004,10 @@ a:hover { color: var(--accent-hover); }
   border-radius: var(--radius);
   margin-bottom: 1rem;
 }
+
+/* ── UPLOAD PAGE ────────────────────────────────── */
+
+
 
 /* ── FORM IMAGES ────────────────────────────────── */
 

@@ -120,7 +120,7 @@ export default function ItemForm() {
   if (loading) return <Loader/>;
 
   return (
-  <main className="form-page">
+  <main className="general-page">
     <div className="form-nav">
       <Link to="/items" className="detail-back">
         ← Back
