@@ -1,6 +1,6 @@
-import { Ollama } from 'ollama';
-import fetch from 'node-fetch';
-const { prompt, reasoningPrompt } = await import('./prompt.js');
+const { Ollama } = require('ollama');
+const { prompt, reasoningPrompt } = require('./prompt.js');
+
 //ollama requires the image to be base64 encoded, so we need to fetch it and convert it before sending to the model
 
 async function fetchImageAsBase64(url) {
@@ -33,4 +33,4 @@ async function identifyItem(imageUrl, useReasoning = true) {
   return JSON.parse(clean);
 }
 
-export { identifyItem };
+module.exports = { identifyItem };

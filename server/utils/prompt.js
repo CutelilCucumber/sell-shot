@@ -46,18 +46,18 @@ Constraints:
 
 JSON Structure:
 {
-  "title": {"value": "string", "confidence_score": float"},
-  "brand": {"value": "string or null", "confidence_score": float"},
-  "category": {"value": "selected_option", "confidence_score": float"},
-  "color": {"value": "primary color(s)", "confidence_score": float"},
-  "material": {"value": "e.g., cotton, leather or null", "confidence_score": float"},
-  "condition": {"value": "selected_option", "confidence_score": float"},
-  "estimatedPrice": {"value": number_or_null, "confidence_score": float"},
-  "tags": {"value": ["tag1", "tag2"], "confidence_score": float"},
-  "description": {"value": "2-3 sentence marketplace description", "confidence_score": float"}
+  "title": {"value": "string", "confidence_score": float, "reasoning": "string"},
+  "brand": {"value": "string or null", "confidence_score": float, "reasoning": "string"},
+  "category": {"value": "selected_option", "confidence_score": float, "reasoning": "string"},
+  "color": {"value": "primary color(s)", "confidence_score": float, "reasoning": "string"},
+  "material": {"value": "e.g., cotton, leather or null", "confidence_score": float, "reasoning": "string"},
+  "condition": {"value": "selected_option", "confidence_score": float, "reasoning": "string"},
+  "estimatedPrice": {"value": number_or_null, "confidence_score": float, "reasoning": "string"},
+  "tags": {"value": ["tag1", "tag2"], "confidence_score": float, "reasoning": "string"},
+  "description": {"value": "2-3 sentence marketplace description", "confidence_score": float, "reasoning": "string"}
 }
 
 Return ONLY the JSON object. No conversational filler.
 `;
 
-export { prompt, reasoningPrompt };
+module.exports = { prompt, reasoningPrompt };

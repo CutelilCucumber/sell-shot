@@ -1,4 +1,5 @@
 const db = require('../db');
+const { identifyItem } = require('../utils/localIdentify');
 
 async function getItems(req, res) {
   try {
@@ -70,10 +71,36 @@ async function deleteItem(req, res) {
   }
 }
 
+async function identifyImage(req, res) {
+  const { imageUrl } = req.body;
+  try {
+    const identified = await identifyItem(imageUrl);
+
+    await db.updateItem(req.params.id, {
+      title:          identified.title?.value || null,
+      description:    identified.description?.value || null,
+      brand:          identified.brand?.value || null,
+      category:       identified.category?.value || null,
+      color:          identified.color?.value || null,
+      condition:      identified.condition?.value || null,
+      estimatedPrice: identified.estimatedPrice?.value || null,
+      aiIdentified:   true,
+      aiData:         identified,
+    });
+
+    await db.upsertItemTags(req.params.id, identified.tags?.value || []);
+
+    res.json({ item: await db.getItemById(req.params.id) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = { 
     getItems, 
     getItem, 
     createItem, 
     updateItem, 
-    deleteItem 
+    deleteItem,
+    identifyImage
 };

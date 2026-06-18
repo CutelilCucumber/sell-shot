@@ -1361,6 +1361,113 @@ a:hover { color: var(--accent-hover); }
   border-radius: 99px;
 }
 
+/* ── AI FIELD ────────────────────────────────── */
+
+.ai-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ai-field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-field__confidence {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  opacity: 0.85;
+}
+
+.ai-field__input-wrap {
+  position: relative;
+}
+
+/* ── AI TOOLTIP ────────────────────────────────── */
+
+.ai-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  animation: tooltipIn 0.12s ease;
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ai-tooltip__icon {
+  color: var(--accent);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ai-tooltip__text {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── AI FORM NOTICE ────────────────────────────────── */
+
+.form-ai-notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--accent-dim);
+  border: 1px solid rgba(232, 194, 122, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 1.5rem;
+}
+
+.form-ai-notice__icon {
+  color: var(--accent);
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.form-ai-notice p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.form-ai-badge {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(232, 194, 122, 0.3);
+  color: var(--accent);
+}
+
+.form-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* ── AUTH ────────────────────────────────── */
 
 .auth-page {

@@ -35,10 +35,10 @@ async function createItem(authorId, data) {
 }
 
 async function updateItem(id, data) {
-  const { title, description, brand, category, size, color, condition, estimatedPrice, aiIdentified } = data;
+  const { title, description, brand, category, size, color, material, condition, estimatedPrice, aiIdentified, aiData } = data;
   return prisma.item.update({
     where: { id },
-    data: { title, description, brand, category, size, color, condition, estimatedPrice, aiIdentified }
+    data: { title, description, brand, category, size, color, material, condition, estimatedPrice, aiIdentified, aiData }
   });
 }
 

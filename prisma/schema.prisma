@@ -29,6 +29,7 @@ model Item {
   condition      String?
   estimatedPrice Decimal?  @db.Decimal(10, 2)
   aiIdentified   Boolean   @default(false)
+  aiData         Json?     // stores full AI response with confidence + reasoning
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   authorId       String

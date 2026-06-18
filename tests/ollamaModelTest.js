@@ -1,4 +1,4 @@
-import { identifyItem } from '../server/utils/localIdentify.js';
+const { identifyItem } = require('../server/utils/localIdentify.js');
 
 // a publicly accessible test image — a clothing item on white background
 const TEST_IMAGE_URL = 
