@@ -91,9 +91,28 @@ async function deleteImage(req, res) {
   }
 }
 
+async function identifyImage(req, res) {
+  const { imageUrl } = req.body;
+
+  try {
+    
+    // placeholder for actual identification logic
+    const identified = {
+      title: 'Identified Item',
+      description: 'This is a placeholder description for the identified item.',
+      tags: ['example', 'identified']
+    };
+
+    res.json({ identified });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = { 
     getImages, 
     addImages, 
     setPrimary, 
-    deleteImage 
+    deleteImage,
+    identifyImage
 };

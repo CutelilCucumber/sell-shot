@@ -52,9 +52,7 @@ export const api = {
 
   //identify
   identifyItem: (itemId, imageUrl) =>
-  request(`/items/${itemId}/identify`, {
-    method: 'POST',
-    body: JSON.stringify({ imageUrl })
+  request(`/items/${itemId}/identify`, { method: 'POST', body: JSON.stringify({ imageUrl })
   }),
   
   // listings
