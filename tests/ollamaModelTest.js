@@ -2,7 +2,7 @@ import { identifyItem } from '../server/utils/localIdentify.js';
 
 // a publicly accessible test image — a clothing item on white background
 const TEST_IMAGE_URL = 
-'https://scontent.fsan1-1.fna.fbcdn.net/v/t39.84726-6/714730230_1006775295277216_6266855003966791635_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=109&ccb=1-7&_nc_sid=92e707&_nc_ohc=EtjcGxW9RGcQ7kNvwHV1jTG&_nc_oc=AdqBgYW3ibyFXQRAx3Z6thhCGYK9c04QDKQSr1eeYQ5QfAD7AAbqALYH-ed-SAeyB-WT9cnMIGuhWDFSQtJP-dKv&_nc_zt=14&_nc_ht=scontent.fsan1-1.fna&_nc_gid=6Td-slAlxT_UfzTbSK9Q2w&_nc_ss=7b2a8&oh=00_Af9WoX26AN0CYi8YqnCxXqpzFxWw6NbKV7jOqkBiherbdw&oe=6A38CE75';
+'https://scontent.fsan1-2.fna.fbcdn.net/v/t39.84726-6/723333853_1450400756776132_5997452865140775319_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=108&ccb=1-7&_nc_sid=92e707&_nc_ohc=pFjPhjh3rWwQ7kNvwGNXYC8&_nc_oc=AdobPZYKHK2hpf8obUJFFM26XpRgkp7e5zvZoA39sJfd8ZgAdfLQETYFgwlscLo61aqbSLh4mAIsDMH65_j8gy2b&_nc_zt=14&_nc_ht=scontent.fsan1-2.fna&_nc_gid=HYJJ59dCCjh1sBVriu8hmg&_nc_ss=7b2a8&oh=00_Af8XVJvzrw-hIqZI7F1_j0UYFfEDBJsjMXcTdVI_8Dm9BA&oe=6A3A1C3E';
 
 async function runTest() {
   console.log('Testing identifyItem with image:', TEST_IMAGE_URL);
@@ -17,7 +17,8 @@ async function runTest() {
     console.log('Result:', JSON.stringify(result, null, 2));
 
     // basic shape validation
-    const expected = ['title', 'brand', 'category', 'color', 'material', 'condition', 'estimatedPrice', 'tags', 'description'];
+    const expected = ['title', 'brand', 'category', 'color', 'material',
+       'condition', 'estimatedPrice', 'tags', 'description'];
     const missing = expected.filter(key => !(key in result));
     const extra = Object.keys(result).filter(key => !expected.includes(key));
 
@@ -25,27 +26,27 @@ async function runTest() {
     if (extra.length) console.warn('⚠ Unexpected fields:', extra);
     if (!missing.length && !extra.length) console.log('✓ All expected fields present');
 
-    if (!Array.isArray(result.tags)) console.warn('⚠ tags should be an array');
-    else console.log('✓ tags is an array:', result.tags);
+    if (!Array.isArray(result.tags.value)) console.warn('⚠ tags should be an array');
+    else console.log('✓ tags is an array:', result.tags.value);
 
-    if (result.estimatedPrice !== null && typeof result.estimatedPrice !== 'number') {
-      console.warn('⚠ estimatedPrice should be a number or null, got:', typeof result.estimatedPrice);
+    if (result.estimatedPrice.value !== null && typeof result.estimatedPrice.value !== 'number') {
+      console.warn('⚠ estimatedPrice should be a number or null, got:', typeof result.estimatedPrice.value);
     } else {
-      console.log('✓ estimatedPrice type ok:', result.estimatedPrice);
+      console.log('✓ estimatedPrice type ok:', result.estimatedPrice.value);
     }
 
     const validCategories = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accessories', 'other'];
-    if (result.category && !validCategories.includes(result.category)) {
-      console.warn('⚠ unexpected category:', result.category);
+    if (result.category.value && !validCategories.includes(result.category.value)) {
+      console.warn('⚠ unexpected category:', result.category.value);
     } else {
-      console.log('✓ category ok:', result.category);
+      console.log('✓ category ok:', result.category.value);
     }
 
     const validConditions = ['new_with_tags', 'like_new', 'good', 'fair', 'poor'];
-    if (result.condition && !validConditions.includes(result.condition)) {
-      console.warn('⚠ unexpected condition:', result.condition);
+    if (result.condition && !validConditions.includes(result.condition.value)) {
+      console.warn('⚠ unexpected condition:', result.condition.value);
     } else {
-      console.log('✓ condition ok:', result.condition);
+      console.log('✓ condition ok:', result.condition.value);
     }
 
   } catch (err) {

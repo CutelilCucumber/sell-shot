@@ -4,7 +4,7 @@
   "description": "Web app to sell anything from a photo.",
   "license": "ISC",
   "author": "Brian Sonderen",
-  "type": "module",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "server": "cd server && node app.js",
