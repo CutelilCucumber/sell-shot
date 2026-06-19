@@ -51,9 +51,13 @@ export const api = {
     request(`/items/${itemId}/images/${imageId}`, { method: 'DELETE' }),
 
   //identify
-  identifyItem: (itemId, imageUrl) =>
-  request(`/items/${itemId}/identify`, { method: 'POST', body: JSON.stringify({ imageUrl })
-  }),
+  identifyItem: async (itemId, imageUrl) => {
+  const result = await request(`/items/${itemId}/identify`, {
+    method: 'POST',
+    body: JSON.stringify({ imageUrl })
+  });
+  return result;
+},
   
   // listings
   getListings: (itemId) => request(`/items/${itemId}/listings`),

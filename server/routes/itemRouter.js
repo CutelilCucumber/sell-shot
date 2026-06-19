@@ -15,6 +15,6 @@ itemRouter.get('/:id', verifyToken, getItem);
 itemRouter.post('/', verifyToken, createItem);
 itemRouter.put('/:id', verifyToken, updateItem);
 itemRouter.delete('/:id', verifyToken, deleteItem);
-itemRouter.post('/:imageId/identify', verifyToken, identifyImage);
+itemRouter.post('/:id/identify', verifyToken, identifyImage);
 
 module.exports = itemRouter;

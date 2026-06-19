@@ -28,9 +28,9 @@ async function getItemById(id) {
 }
 
 async function createItem(authorId, data) {
-  const { title, description, brand, category, size, color, condition, estimatedPrice } = data;
+  const { title, description, brand, category, size, color, material, condition, estimatedPrice } = data;
   return prisma.item.create({
-    data: { authorId, title, description, brand, category, size, color, condition, estimatedPrice }
+    data: { authorId, title, description, brand, category, size, color, material, condition, estimatedPrice }
   });
 }
 

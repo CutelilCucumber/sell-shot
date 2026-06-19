@@ -27,6 +27,7 @@ model Item {
   size           String?
   color          String?
   condition      String?
+  material       String?
   estimatedPrice Decimal?  @db.Decimal(10, 2)
   aiIdentified   Boolean   @default(false)
   aiData         Json?     // stores full AI response with confidence + reasoning

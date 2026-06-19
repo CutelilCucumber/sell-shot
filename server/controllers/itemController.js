@@ -73,25 +73,30 @@ async function deleteItem(req, res) {
 
 async function identifyImage(req, res) {
   const { imageUrl } = req.body;
+
   try {
     const identified = await identifyItem(imageUrl);
-
+    
     await db.updateItem(req.params.id, {
       title:          identified.title?.value || null,
       description:    identified.description?.value || null,
       brand:          identified.brand?.value || null,
       category:       identified.category?.value || null,
       color:          identified.color?.value || null,
+      material:       identified.material?.value || null,
       condition:      identified.condition?.value || null,
       estimatedPrice: identified.estimatedPrice?.value || null,
       aiIdentified:   true,
       aiData:         identified,
     });
-
     await db.upsertItemTags(req.params.id, identified.tags?.value || []);
+    
 
-    res.json({ item: await db.getItemById(req.params.id) });
+    const item = await db.getItemById(req.params.id);
+
+    res.json({ item });
   } catch (err) {
+    console.error('identify controller error:', err);
     res.status(500).json({ error: err.message });
   }
 }
