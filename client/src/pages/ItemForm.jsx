@@ -10,6 +10,7 @@ export default function ItemForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  // isblank will be false if an image initializes database
   const isBlank = !id;
 
   const [item, setItem] = useState(null);
@@ -26,11 +27,13 @@ export default function ItemForm() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
+  // load item data from api if item exists
   useEffect(() => {
     if (isBlank) return;
     api.getItem(id)
       .then(data => {
         const i = data.item;
+        // populate states on mount
         setItem(i);
         setAiData(i.aiData || null);
         setForm({
@@ -62,6 +65,8 @@ export default function ItemForm() {
 
   function handleChange(e) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    // aiData cleared when making a change
+    if (aiData?.[e.target.name]) setAiData(prev => ({ ...prev, [e.target.name]: null }));
   }
 
   function addTag(e) {
@@ -115,10 +120,12 @@ export default function ItemForm() {
     e.preventDefault();
     setSaving(true);
     setError(null);
+    // reduce db calls by bundling data in payload
     try {
       const payload = {
         ...form,
         estimatedPrice: form.estimatedPrice ? parseFloat(form.estimatedPrice) : null,
+        aiData,
       };
 
       if (isBlank) {
@@ -138,13 +145,13 @@ export default function ItemForm() {
   if (loading) return <div className="page-status">Loading...</div>;
 
   return (
-    <main className="form-page">
+    <main className="general-page">
       <div className="form-nav">
         <Link to={id ? `/items/${id}` : '/items'} className="detail-back">
           ← {id ? 'Back to item' : 'My items'}
         </Link>
         <div className="form-nav__right">
-          {aiData && <span className="form-ai-badge">◈ AI identified</span>}
+          {aiData && <span className="form-ai-badge">◈ Identified</span>}
           <h1 className="form-page__title">{isBlank ? 'New item' : 'Edit item'}</h1>
         </div>
       </div>
@@ -156,7 +163,7 @@ export default function ItemForm() {
           {aiData && (
             <div className="form-ai-notice">
               <span className="form-ai-notice__icon">◈</span>
-              <p>Fields are pre-filled by AI. Border colour shows confidence — green is high, red is low. Click any field to see the reasoning.</p>
+              <p>Fields are pre-filled by AI. Border color shows confidence — green is high, red is low. Click any field to see the reasoning.</p>
             </div>
           )}
 
