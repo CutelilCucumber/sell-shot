@@ -1,5 +1,17 @@
 const db = require('../db');
 
+async function getAllListings(req, res) {
+  try {
+    const items = await db.getItemsByUser(req.user.id);
+    const listings = items.flatMap(item =>
+      (item.listings || []).map(l => ({ ...l, item }))
+    );
+    res.json({ listings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 async function getListings(req, res) {
   try {
     const listings = await db.getListingsByItem(req.params.itemId);
@@ -94,6 +106,7 @@ async function deleteListing(req, res) {
 }
 
 module.exports = { 
+    getAllListings,
     getListings, 
     getListing, 
     createListing, 

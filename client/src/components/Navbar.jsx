@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function Navbar() {
+export default function Navbar({ flaggedCount = 0 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -9,6 +9,10 @@ export default function Navbar() {
   function handleLogout() {
     logout();
     navigate('/');
+  }
+
+  function isActive(path) {
+    return location.pathname.startsWith(path) ? 'navbar__link--active' : '';
   }
 
   return (
@@ -20,15 +24,16 @@ export default function Navbar() {
       <nav className="navbar__links">
         {user ? (
           <>
-            <Link
-              to="/items"
-              className={`navbar__link ${location.pathname.startsWith('/items') ? 'navbar__link--active' : ''}`}
-            >
+            <Link to="/items" className={`navbar__link ${isActive('/items')}`}>
               My Items
             </Link>
-            <Link to="/items/new" className="navbar__cta">
-              + New Item
+            <Link to="/listings" className={`navbar__link ${isActive('/listings')}`}>
+              Listings
+              {flaggedCount > 0 && (
+                <span className="navbar__badge">{flaggedCount}</span>
+              )}
             </Link>
+            <Link to="/items/new" className="navbar__cta">+ New Item</Link>
             <button className="navbar__ghost" onClick={handleLogout}>Sign out</button>
           </>
         ) : (

@@ -60,6 +60,7 @@ export const api = {
 },
   
   // listings
+  getListingsAll: () => request('/listings'),
   getListings: (itemId) => request(`/items/${itemId}/listings`),
   createListing: (itemId, data) =>
     request(`/items/${itemId}/listings`, { method: 'POST', body: JSON.stringify(data) }),

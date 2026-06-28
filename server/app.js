@@ -7,9 +7,11 @@ const authRouter = require('./routes/authRouter');
 const itemRouter = require('./routes/itemRouter');
 const imageRouter = require('./routes/imageRouter');
 const listingRouter = require('./routes/listingRouter');
+const listingsRouter = require('./routes/allListingsRouter');
 const marketplaceRouter = require('./routes/marketplaceRouter');
 const tagRouter = require('./routes/tagRouter');
 const adminRouter = require('./routes/adminRouter');
+const { verifyToken } = require('./middleware/auth');
 
 const app = express();
 
@@ -21,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/items', itemRouter);
 app.use('/api/items/:itemId/images', imageRouter);
+app.use('/api/listings', listingsRouter);
 app.use('/api/items/:itemId/listings', listingRouter);
 app.use('/api/marketplaces', marketplaceRouter);
 app.use('/api/tags', tagRouter);

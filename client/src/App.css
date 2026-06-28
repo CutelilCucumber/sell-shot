@@ -695,6 +695,22 @@ a:hover { color: var(--accent-hover); }
   letter-spacing: 0.04em;
 }
 
+.detail-list-action {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.detail-list-action__row {
+  display: flex;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+.detail-list-action__select {
+  flex: 1;
+}
+
 /* ── LISTINGS ────────────────────────────────── */
 
 .detail-listings {
