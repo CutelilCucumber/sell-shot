@@ -6,12 +6,12 @@ export default defineConfig({
   schema: 'prisma/schema.prisma',
 
   datasource: {
-    url: env('DATABASE_URL'),
+    url: env('DIRECT_URL'),
   },
 
   migrate: {
     async adapter() {
-      return new PrismaPg({ connectionString: env('DATABASE_URL') })
+      return new PrismaPg({ connectionString: env('DIRECT_URL') })
     }
   }
 })
