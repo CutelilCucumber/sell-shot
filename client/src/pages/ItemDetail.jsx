@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import Loader from '../components/Loader';
-import TemplateModal from '../components/TemplateModal';
 
 const STATUS_LABEL = {
   DRAFT: 'Draft', PENDING: 'Pending', ACTIVE: 'Active',
@@ -147,53 +146,6 @@ export default function ItemDetail() {
                 <span key={t.tagId} className="detail-item-tag">#{t.tag.name}</span>
               ))}
             </div>
-          )}
-
-          <div className="detail-list-action">
-            <h2 className="detail-listings__title">List this item</h2>
-            <div className="detail-list-action__row">
-              <select
-                className="listing-row__status-select detail-list-action__select"
-                value={selectedMp}
-                onChange={e => setSelectedMp(e.target.value)}
-              >
-                <option value="">Select marketplace...</option>
-                {marketplaces
-                  .filter(mp => !item.listings?.some(
-                    l => l.marketplaceId === mp.id && l.status !== 'REMOVED'
-                  ))
-                  .map(mp => (
-                    <option key={mp.id} value={mp.id}>{mp.name}</option>
-                  ))
-                }
-              </select>
-              <button
-                className="btn btn--primary btn--sm"
-                disabled={!selectedMp}
-                onClick={() => {
-                  const mp = marketplaces.find(m => m.id === selectedMp);
-                  if (mp) setTemplateModal({ item, marketplace: mp });
-                }}
-              >
-                List →
-              </button>
-            </div>
-          </div>
-              
-          {templateModal && (
-            <TemplateModal
-              item={templateModal.item}
-              marketplace={templateModal.marketplace}
-              onClose={() => setTemplateModal(null)}
-              onListingCreated={listing => {
-                setItem(prev => ({
-                  ...prev,
-                  listings: [...(prev.listings || []), listing]
-                }));
-                setTemplateModal(null);
-                setSelectedMp('');
-              }}
-            />
           )}
 
           <div className="detail-listings">

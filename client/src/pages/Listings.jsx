@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
-import TemplateModal from '../components/TemplateModal';
 import StatusModal from '../components/StatusModal';
 
 const STATUS_LABEL = {
@@ -20,9 +19,6 @@ export default function Listings({ onFlaggedCountChange }) {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('All');
   const [expanded, setExpanded] = useState({});
-
-  // template modal state
-  const [templateModal, setTemplateModal] = useState(null); // { item, marketplace }
 
   // status modal state
   const [statusModal, setStatusModal] = useState(null); // { listing, item, newStatus }
@@ -237,7 +233,7 @@ export default function Listings({ onFlaggedCountChange }) {
                           <button
                             key={mp.id}
                             className="listing-group__add-btn"
-                            onClick={() => setTemplateModal({ item, marketplace: mp })}
+                            // onClick={() => setTemplateModal({ item, marketplace: mp })}
                           >
                             + {mp.name}
                           </button>
@@ -256,18 +252,6 @@ export default function Listings({ onFlaggedCountChange }) {
             );
           })}
         </div>
-      )}
-
-      {templateModal && (
-        <TemplateModal
-          item={templateModal.item}
-          marketplace={templateModal.marketplace}
-          onClose={() => setTemplateModal(null)}
-          onListingCreated={listing => {
-            handleListingCreated(templateModal.item.id, listing);
-            setTemplateModal(null);
-          }}
-        />
       )}
 
       {statusModal && (
