@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
-import StatusModal from '../components/StatusModal';
+import Loader from '../components/Loader';
 
 const STATUS_LABEL = {
   DRAFT: 'Draft', PENDING: 'Pending', ACTIVE: 'Active',
@@ -93,7 +93,7 @@ export default function Listings({ onFlaggedCountChange }) {
   const totalFlagged = items.reduce((acc, item) =>
     acc + (item.listings || []).filter(l => l.flagged).length, 0);
 
-  if (loading) return <div className="page-status">Loading listings...</div>;
+  if (loading) return <Loader/>;
   if (error) return <div className="page-status page-status--error">{error}</div>;
 
   return (

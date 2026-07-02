@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../api';
 import Loader from '../components/Loader';
+import AiLoader from '../components/AiLoader';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -133,13 +134,13 @@ export default function UploadPage() {
 
         {uploading && (
           <div className="upload-drop__overlay">
-            <div className="upload-spinner" />
+            <Loader />
           </div>
         )}
 
         {identifying && (
           <div className="upload-drop__overlay">
-            <Loader />
+            <AiLoader />
           </div>
         )}
 

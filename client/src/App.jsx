@@ -8,6 +8,7 @@ import ItemDetail from './pages/ItemDetail';
 import ItemForm from './pages/ItemForm';
 import ItemUpload from './pages/ItemUpload';
 import Listings from './pages/Listings';
+import Loader from './components/Loader';
 import { Login, Register } from './pages/Auth';
 import './App.css';
 
