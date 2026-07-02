@@ -134,7 +134,7 @@ export default function UploadPage() {
 
         {uploading && (
           <div className="upload-drop__overlay">
-            <Loader />
+            <AiLoader />
           </div>
         )}
 
