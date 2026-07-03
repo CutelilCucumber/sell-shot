@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../api';
 import Loader from '../components/Loader';
@@ -10,66 +10,101 @@ export default function UploadPage() {
 
   const [preview, setPreview] = useState(null);
   const [dragging, setDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [identifying, setIdentifying] = useState(false);
   const [itemId, setItemId] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
 
-  function handleFileSelect(file) {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
+  // load image data from api for multi-upload
+    useEffect(() => {
+      console.log(images)
+      if (!itemId) return;
+      api.getItem(itemId) 
+        .then(data => {
+          setImages(data.item.images || []);
+        })
+        .catch(err => setError(err.message))
+        .finally(() => setLoading(false));
+    }, [itemId]);
+
+  function handleFileSelect(e) {
+    if (!e) return;
+    if (!e.type.startsWith('image/')) {
       setError('Please select an image file');
       return;
     }
     setError(null);
-    setPreview(URL.createObjectURL(file));
-    handleUpload(file);
+    setPreview(URL.createObjectURL(e));
+    handleImageUpload(e);
   }
 
-  async function handleUpload(file) {
-    setUploading(true);
+  async function handleImageUpload(e) {
+    //offload identification should take no more than 3 imgs
+    if (images.length > 3) return;
+    let files = Array.from(e.target.files);
+    if (files.length + images.length > 3) files = files.slice(0, 3 - images.length );
+    setLoading(true);
     setError(null);
-    setItemId(null);
-    setImageUrl(null);
     try {
-      const itemData = await api.createItem({});
-      const newItemId = itemData.item.id;
+      let newItemId = itemId;
+      if (!itemId) {
+        const itemData = await api.createItem({});
+        newItemId = itemData.item.id;
+      }
 
       const formData = new FormData();
-      formData.append('images', file);
+      files.forEach(f => formData.append('images', f));
       const imageData = await api.uploadImages(newItemId, formData);
 
       if (!imageData.images?.length) throw new Error('Image upload failed');
 
-      setItemId(newItemId);
-      setImageUrl(imageData.images[0].url);
+      if (!itemId) setItemId(newItemId);
+      setImages(prev => [...prev, ...(imageData.images || [])]);
     } catch (err) {
       setError(err.message);
       setPreview(null);
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   }
 
-  function handleRemove() {
-    // item was created as a draft — delete it to avoid orphans
-    if (itemId) {
-      api.deleteItem(itemId).catch(console.error);
+  async function handleSetPrimary(imageId) {
+    try { 
+      await api.setPrimaryImage(itemId, imageId);
+      setImages(prev => prev.map(img => ({ ...img, isPrimary: img.id === imageId })));
+    } catch (err) {
+      console.error(err);
     }
-    setPreview(null);
-    setItemId(null);
-    setImageUrl(null);
-    setError(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  async function handleDeleteImage(imageId) {
+    try {
+      await api.deleteImage(itemId, imageId);
+      setImages(prev => prev.filter(img => img.id !== imageId));
+
+      if (images.length === 1) {
+        try {
+          await api.deleteItem(itemId);
+        } catch (err) {
+          console.error(err);
+        }
+
+        setItemId(null);
+        setPreview(null);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async function handleOffload() {
-    if (!itemId || !imageUrl) return;
+    if (!itemId || !images) return;
     setIdentifying(true);
     setError(null);
     try {
-      const identified = await api.identifyItem(itemId, imageUrl);
+      const imageUrls = images.map(img => img.url);
+      const identified = await api.identifyItem(itemId, imageUrls);
       navigate(`/items/${itemId}/edit`, {
         state: { identified }
       });
@@ -86,13 +121,7 @@ export default function UploadPage() {
     });
   }
 
-  function onDrop(e) {
-    e.preventDefault();
-    setDragging(false);
-    handleFileSelect(e.dataTransfer.files?.[0]);
-  }
-
-  const ready = !!itemId && !uploading;
+  const ready = !!itemId && !loading;
 
   return (
     <main className="upload-page">
@@ -104,55 +133,71 @@ export default function UploadPage() {
         </p>
       </div>
 
-      <div
-        className={`upload-drop ${dragging ? 'upload-drop--dragging' : ''} ${uploading ? 'upload-drop--busy' : ''} ${preview ? 'upload-drop--filled' : ''}`}
-        onDrop={onDrop}
-        onDragOver={e => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onClick={() => !preview && !uploading && fileInputRef.current?.click()}
-      >
-        {preview ? (
-          <>
-            <img src={preview} alt="" className="upload-drop__preview" />
-            {!uploading && (
+      <div className="upload-field">
+          <div className="form-section__title-row">
+            <h2 className="form-section__title">Images</h2>
               <button
-                className="upload-drop__remove"
-                onClick={e => { e.stopPropagation(); handleRemove(); }}
-                title="Remove photo"
+                type="button"
+                className={`btn btn--primary btn--sm ${images.length < 3 ? '' : 'upload-action--disabled'}`}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
               >
-                ✕
+                {loading ? 'Uploading...' : '+ Add'}
               </button>
-            )}
-          </>
-        ) : (
-          <div className="upload-drop__placeholder">
-            <span className="upload-drop__icon">◈</span>
-            <p className="upload-drop__text">Drop a photo here, or click to browse</p>
-            <p className="upload-drop__hint">JPG, PNG, WEBP, or HEIC — up to 10MB</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: 'none' }}
+              onChange={handleImageUpload}
+            />
           </div>
-        )}
 
-        {uploading && (
-          <div className="upload-drop__overlay">
-            <AiLoader />
-          </div>
-        )}
+          { loading ? (
+            <Loader />
+          ) : (
+            <div className="images-grid">
+              {images.map(img => (
+                <div
+                  key={img.id}
+                  className={`image-thumb ${img.isPrimary ? 'image-thumb--primary' : ''}`}
+                >
+                  <img src={img.url} alt="" className="image-thumb__img" />
+                  <div className="image-thumb__overlay">
+                    {!img.isPrimary && (
+                      <button
+                        className="image-thumb__btn"
+                        onClick={() => handleSetPrimary(img.id)}
+                      >
+                        Set primary
+                      </button>
+                    )}
+                    {img.isPrimary && (
+                      <span className="image-thumb__primary-label">Primary</span>
+                    )}
+                    <button
+                      className="image-thumb__btn image-thumb__btn--danger"
+                      onClick={() => handleDeleteImage(img.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
 
-        {identifying && (
-          <div className="upload-drop__overlay">
-            <AiLoader />
-          </div>
-        )}
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: 'none' }}
-          onChange={e => handleFileSelect(e.target.files?.[0])}
-        />
-      </div>
+              <div className="image-thumb image-thumb--info">
+                  <strong>Identification Tips:</strong>
+                <ul>
+                  <li>Upload up to 3 images.</li>
+                  <li>Use a neutral background with clear lighting.</li>
+                  <li>Make sure the item and tags are clearly visible.</li>
+                </ul>
+                
+              </div>
+            </div>
+          )}
+        </div>
 
       {error && <p className="upload-error">{error}</p>}
 

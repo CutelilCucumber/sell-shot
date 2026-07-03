@@ -1,7 +1,7 @@
 const prompt = 
 `You are an expert at identifying second-hand clothing and items for resale.
 
-Analyze this image and return ONLY a JSON object. Each field must be an object containing the "value", a "confidence_score" (0.0 to 1.0).
+Analyze these images and return ONLY a JSON object. Each field must be an object containing the "value", a "confidence_score" (0.0 to 1.0).
 
 If a value cannot be determined, set the "value" to null.
 
@@ -32,7 +32,7 @@ Return ONLY the JSON object. No conversational filler.
 const reasoningPrompt = 
 `You are an expert at identifying second-hand clothing and items for resale.
 
-Analyze this image and return ONLY a JSON object. Each field must be an object containing the "value", a "confidence_score" (0.0 to 1.0), and a brief "reasoning"_string (a few words describing what you see).
+Analyze these images and return ONLY a JSON object. Each field must be an object containing the "value", a "confidence_score" (0.0 to 1.0), and a brief "reasoning"_string (a few words describing what you see).
 
 If a value cannot be determined, set the "value" to null and "confidence_score" to 0.0.
 

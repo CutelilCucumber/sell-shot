@@ -1,7 +1,7 @@
 const { Ollama } = require('ollama');
 const { prompt, reasoningPrompt } = require('./prompt.js');
 
-//ollama requires the image to be base64 encoded, so we need to fetch it and convert it before sending to the model
+//ollama requires the images to be base64 encoded, so we need to fetch it and convert it before sending to the model
 
 async function fetchImageAsBase64(url) {
   const res = await fetch(url);
@@ -9,9 +9,11 @@ async function fetchImageAsBase64(url) {
   return Buffer.from(buffer).toString('base64');
 }
 
-async function identifyItem(imageUrl, useReasoning = true) {
+async function identifyItem(imageUrls, useReasoning = true) {
   const ollama = new Ollama();
-  const imageBase64 = await fetchImageAsBase64(imageUrl);
+  const imageBase64Array = await Promise.all(
+    imageUrls.map(url => fetchImageAsBase64(url))
+  );
 
   const response = await ollama.chat({
     model: 'minicpm-v4.5:latest',
@@ -19,7 +21,7 @@ async function identifyItem(imageUrl, useReasoning = true) {
       {
         role: 'user',
         content: useReasoning ? reasoningPrompt : prompt,
-        images: [imageBase64],
+        images: imageBase64Array,
       }
     ],
     stream: false,

@@ -51,10 +51,10 @@ export const api = {
     request(`/items/${itemId}/images/${imageId}`, { method: 'DELETE' }),
 
   //identify
-  identifyItem: async (itemId, imageUrl) => {
+  identifyItem: async (itemId, imageUrls) => {
   const result = await request(`/items/${itemId}/identify`, {
     method: 'POST',
-    body: JSON.stringify({ imageUrl })
+    body: JSON.stringify({ imageUrls })
   });
   return result;
 },

@@ -72,10 +72,10 @@ async function deleteItem(req, res) {
 }
 
 async function identifyImage(req, res) {
-  const { imageUrl } = req.body;
+  const { imageUrls } = req.body;
 
   try {
-    const identified = await identifyItem(imageUrl);
+    const identified = await identifyItem(imageUrls);
     
     await db.updateItem(req.params.id, {
       title:          identified.title?.value || null,

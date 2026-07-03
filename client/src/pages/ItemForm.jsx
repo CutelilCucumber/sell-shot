@@ -322,7 +322,10 @@ export default function ItemForm() {
             />
           </div>
 
-          {images.length === 0 ? (
+          { loading ? (
+              <Loader />
+            ) : 
+           images.length === 0 ? (
             <div className="images-empty">
               <p>No images yet</p>
               {id && (
