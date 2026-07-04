@@ -11,7 +11,7 @@
     "client": "cd client && npm run dev"
   },
   "prisma": {
-  "seed": "node prisma/dbseed.js"
+    "seed": "node prisma/dbseed.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -31,6 +31,7 @@
     "react": "^19.2.7",
     "react-router": "^7.17.0",
     "react-router-dom": "^7.17.0",
+    "sharp": "^0.35.3",
     "vite": "^8.0.16"
   },
   "devDependencies": {
