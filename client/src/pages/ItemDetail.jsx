@@ -17,7 +17,6 @@ export default function ItemDetail() {
   const [error, setError] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
   const [selectedMp, setSelectedMp] = useState('');
-  const [templateModal, setTemplateModal] = useState(null);
 
   // new listing form
   const [showListForm, setShowListForm] = useState(false);

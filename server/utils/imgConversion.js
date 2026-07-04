@@ -8,7 +8,9 @@ app.post('/upload', upload.single('image'), async (req, res) => {
 
     // Resize and convert to WebP
     await sharp(inputPath)
-      .resize({ width: 800, height: 600 }) // Adjust dimensions as needed
+      .resize(1000, 1000, {
+        fit: 'inside', // Maintain aspect ratio
+      })
       .toFormat('webp') // Convert to WebP
       .toFile(outputPath);
 
