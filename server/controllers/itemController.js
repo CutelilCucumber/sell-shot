@@ -1,5 +1,5 @@
 const db = require('../db');
-const { identifyItem } = require('../utils/localIdentify');
+const { identifyItem } = require('../utils/opencodeIdentify');
 
 async function getItems(req, res) {
   try {
