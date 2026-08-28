@@ -233,9 +233,13 @@ export default function Listings({ onFlaggedCountChange }) {
                           <button
                             key={mp.id}
                             className="listing-group__add-btn"
-                            // onClick={() => setTemplateModal({ item, marketplace: mp })}
+                            onClick={() => {
+                              if (mp.type === 'TEMPLATE' && mp.listingUrl) {
+                                window.open(mp.listingUrl, '_blank', 'noopener,noreferrer');
+                              }
+                            }}
                           >
-                            + {mp.name}
+                            + {mp.name} {mp.type === 'TEMPLATE' && '↗'}
                           </button>
                         );
                       })}

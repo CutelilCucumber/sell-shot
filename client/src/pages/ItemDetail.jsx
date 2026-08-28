@@ -16,12 +16,11 @@ export default function ItemDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
-  const [selectedMp, setSelectedMp] = useState('');
 
-  // new listing form
-  const [showListForm, setShowListForm] = useState(false);
+  // new listing form - shown by default
   const [listForm, setListForm] = useState({ marketplaceId: '', title: '', description: '', listingPrice: '' });
   const [listing, setListing] = useState(false);
+  const [selectedMarketplace, setSelectedMarketplace] = useState(null);
 
   useEffect(() => {
     Promise.all([api.getItem(id), api.getMarketplaces()])
@@ -40,8 +39,22 @@ export default function ItemDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  function handleMarketplaceChange(e) {
+    const mpId = e.target.value;
+    const mp = marketplaces.find(m => m.id === mpId) || null;
+    setSelectedMarketplace(mp);
+    setListForm(f => ({ ...f, marketplaceId: mpId }));
+  }
+
   async function handleCreateListing(e) {
     e.preventDefault();
+    if (!selectedMarketplace) return;
+
+    if (selectedMarketplace.type === 'TEMPLATE') {
+      window.open(selectedMarketplace.listingUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     setListing(true);
     try {
       const data = await api.createListing(id, {
@@ -49,9 +62,12 @@ export default function ItemDetail() {
         listingPrice: listForm.listingPrice ? parseFloat(listForm.listingPrice) : null
       });
       setItem(prev => ({ ...prev, listings: [...(prev.listings || []), data.listing] }));
-      setShowListForm(false);
+      setListForm({ marketplaceId: '', title: '', description: '', listingPrice: '' });
+      setSelectedMarketplace(null);
+      navigate('/listings');
     } catch (err) {
       console.error(err);
+      alert(err.message || 'Failed to create listing');
     } finally {
       setListing(false);
     }
@@ -148,102 +164,112 @@ export default function ItemDetail() {
           )}
 
           <div className="detail-listings">
-            <div className="detail-listings__header">
-              <h2 className="detail-listings__title">Listings</h2>
-              <button className="btn btn--primary btn--sm" onClick={() => setShowListForm(v => !v)}>
-                {showListForm ? 'Cancel' : '+ Add listing'}
+            <h2 className="detail-listings__title">Create New Listing</h2>
+
+            <form className="list-form" onSubmit={handleCreateListing}>
+              <div className="list-form__group">
+                <label className="list-form__label">Marketplace</label>
+                <select
+                  className="list-form__input"
+                  value={listForm.marketplaceId}
+                  onChange={handleMarketplaceChange}
+                  required
+                >
+                  <option value="">Select marketplace...</option>
+                  {marketplaces.map(mp => (
+                    <option key={mp.id} value={mp.id}>
+                      {mp.name} {mp.type === 'TEMPLATE' ? '(Template)' : '(API)'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="list-form__group">
+                <label className="list-form__label">Title</label>
+                <input
+                  className="list-form__input"
+                  value={listForm.title}
+                  onChange={e => setListForm(f => ({ ...f, title: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="list-form__group">
+                <label className="list-form__label">Description</label>
+                <textarea
+                  className="list-form__input"
+                  rows={3}
+                  value={listForm.description}
+                  onChange={e => setListForm(f => ({ ...f, description: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="list-form__group">
+                <label className="list-form__label">Price (USD)</label>
+                <input
+                  className="list-form__input"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={listForm.listingPrice}
+                  onChange={e => setListForm(f => ({ ...f, listingPrice: e.target.value }))}
+                />
+              </div>
+
+              {selectedMarketplace && (
+                <p className="list-form__hint">
+                  {selectedMarketplace.type === 'TEMPLATE'
+                    ? `Opens ${selectedMarketplace.name} in a new tab — you'll need to re-upload photos and complete the listing there.`
+                    : 'Creates the listing on eBay via API.'}
+                </p>
+              )}
+
+              <button className="btn btn--primary" type="submit" disabled={listing || !listForm.marketplaceId}>
+                {listing
+                  ? 'Creating...'
+                  : selectedMarketplace?.type === 'TEMPLATE'
+                    ? `Open ${selectedMarketplace.name} Listing Page`
+                    : 'Create eBay Listing'}
               </button>
-            </div>
+            </form>
 
-            {showListForm && (
-              <form className="list-form" onSubmit={handleCreateListing}>
-                <div className="list-form__group">
-                  <label className="list-form__label">Marketplace</label>
-                  <select
-                    className="list-form__input"
-                    value={listForm.marketplaceId}
-                    onChange={e => setListForm(f => ({ ...f, marketplaceId: e.target.value }))}
-                    required
-                  >
-                    <option value="">Select marketplace...</option>
-                    {marketplaces.map(mp => (
-                      <option key={mp.id} value={mp.id}>{mp.name}</option>
-                    ))}
-                  </select>
+            {item.listings?.length > 0 && (
+              <div className="detail-listings__existing">
+                <h3 className="detail-listings__existing-title">Existing Listings</h3>
+                <div className="listing-list">
+                  {item.listings.map(l => (
+                    <div className="listing-row" key={l.id}>
+                      <div className="listing-row__left">
+                        <span className={`listing-status listing-status--${l.status.toLowerCase()}`}>
+                          {STATUS_LABEL[l.status]}
+                        </span>
+                        <span className="listing-row__mp">{l.marketplace?.name}</span>
+                        <span className="listing-row__title">{l.title}</span>
+                      </div>
+                      <div className="listing-row__right">
+                        {l.listingPrice && (
+                          <span className="listing-row__price">${Number(l.listingPrice).toFixed(2)}</span>
+                        )}
+                        <select
+                          className="listing-row__status-select"
+                          value={l.status}
+                          onChange={e => handleStatusChange(l.id, e.target.value)}
+                        >
+                          {Object.keys(STATUS_LABEL).map(s => (
+                            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                          ))}
+                        </select>
+                        <button
+                          className="listing-row__delete"
+                          onClick={() => handleDeleteListing(l.id)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="list-form__group">
-                  <label className="list-form__label">Title</label>
-                  <input
-                    className="list-form__input"
-                    value={listForm.title}
-                    onChange={e => setListForm(f => ({ ...f, title: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="list-form__group">
-                  <label className="list-form__label">Description</label>
-                  <textarea
-                    className="list-form__input"
-                    rows={3}
-                    value={listForm.description}
-                    onChange={e => setListForm(f => ({ ...f, description: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="list-form__group">
-                  <label className="list-form__label">Price (USD)</label>
-                  <input
-                    className="list-form__input"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={listForm.listingPrice}
-                    onChange={e => setListForm(f => ({ ...f, listingPrice: e.target.value }))}
-                  />
-                </div>
-                <button className="btn btn--primary" type="submit" disabled={listing}>
-                  {listing ? 'Creating...' : 'Create listing'}
-                </button>
-              </form>
+              </div>
             )}
-
-            {item.listings?.length === 0 && !showListForm && (
-              <p className="detail-listings__empty">No listings yet.</p>
-            )}
-
-            <div className="listing-list">
-              {item.listings?.map(l => (
-                <div className="listing-row" key={l.id}>
-                  <div className="listing-row__left">
-                    <span className={`listing-status listing-status--${l.status.toLowerCase()}`}>
-                      {STATUS_LABEL[l.status]}
-                    </span>
-                    <span className="listing-row__mp">{l.marketplace?.name}</span>
-                    <span className="listing-row__title">{l.title}</span>
-                  </div>
-                  <div className="listing-row__right">
-                    {l.listingPrice && (
-                      <span className="listing-row__price">${Number(l.listingPrice).toFixed(2)}</span>
-                    )}
-                    <select
-                      className="listing-row__status-select"
-                      value={l.status}
-                      onChange={e => handleStatusChange(l.id, e.target.value)}
-                    >
-                      {Object.keys(STATUS_LABEL).map(s => (
-                        <option key={s} value={s}>{STATUS_LABEL[s]}</option>
-                      ))}
-                    </select>
-                    <button
-                      className="listing-row__delete"
-                      onClick={() => handleDeleteListing(l.id)}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

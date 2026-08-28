@@ -10,10 +10,10 @@ async function main() {
     { name: 'Facebook Marketplace', slug: 'facebook', type: 'TEMPLATE', listingUrl: 'https://www.facebook.com/marketplace/create/item' },
     { name: 'Mercari',              slug: 'mercari',  type: 'TEMPLATE', listingUrl: 'https://www.mercari.com/sell' },
     { name: 'OfferUp',              slug: 'offerup',  type: 'TEMPLATE', listingUrl: 'https://offerup.com/post' },
-    { name: 'Depop',                slug: 'depop',    type: 'API',      listingUrl: 'https://www.depop.com/sell/' },
+    { name: 'Depop',                slug: 'depop',    type: 'TEMPLATE', listingUrl: 'https://www.depop.com/sell/' },
     { name: 'eBay',                 slug: 'ebay',     type: 'API',      listingUrl: null },
-    { name: 'Poshmark',             slug: 'poshmark', type: 'API',      listingUrl: null },
-    { name: 'Etsy',                 slug: 'etsy',     type: 'API',      listingUrl: null },
+    { name: 'Poshmark',             slug: 'poshmark', type: 'TEMPLATE', listingUrl: 'https://poshmark.com/sell' },
+    { name: 'Etsy',                 slug: 'etsy',     type: 'TEMPLATE', listingUrl: 'https://www.etsy.com/your/listings/new' },
   ];
 
   for (const mp of marketplaces) {

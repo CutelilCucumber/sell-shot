@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ flaggedCount = 0 }) {
-  const { user, logout } = useAuth();
+  const { user, logout, offloadingCount } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,6 +33,12 @@ export default function Navbar({ flaggedCount = 0 }) {
                 <span className="navbar__badge">{flaggedCount}</span>
               )}
             </Link>
+            {offloadingCount > 0 && (
+              <span className="navbar__offloading" aria-label={`${offloadingCount} offloading${offloadingCount !== 1 ? 's' : ''} in progress`}>
+                <span className="navbar__offloading-icon">◈</span>
+                <span className="navbar__offloading-count">{offloadingCount}</span>
+              </span>
+            )}
             <Link to="/items/new" className="navbar__cta">+ New Item</Link>
             <button className="navbar__ghost" onClick={handleLogout}>Sign out</button>
           </>

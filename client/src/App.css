@@ -143,6 +143,46 @@ a:hover { color: var(--accent-hover); }
 
 .navbar__ghost:hover { color: var(--red); }
 
+.navbar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: 6px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  border-radius: 99px;
+  background: var(--red);
+  color: var(--bg);
+}
+
+.navbar__offloading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.navbar__offloading-icon {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ── BUTTONS ────────────────────────────────── */
 
 .btn {
@@ -403,7 +443,8 @@ a:hover { color: var(--accent-hover); }
   overflow: hidden;
   opacity: 0;
   animation: fadeUp 0.3s ease forwards;
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), background var(--transition);
+  position: relative;
 }
 
 .item-card:hover { border-color: var(--border-strong); }
@@ -541,6 +582,71 @@ a:hover { color: var(--accent-hover); }
 
 .item-card__btn:hover { background: var(--bg-hover); color: var(--text); }
 .item-card__btn--danger:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
+
+.item-card__select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--text);
+  opacity: 0;
+  transition: opacity var(--transition), border-color var(--transition), background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.item-card:hover .item-card__select,
+.item-card--selected .item-card__select {
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
+.item-card--selected .item-card__select {
+  opacity: 1;
+}
+
+.item-card__select--checked {
+  border-color: var(--accent);
+  background: var(--accent);
+  opacity: 1;
+}
+
+.item-card__select--checked::after {
+  content: '';
+  width: 12px;
+  height: 20px;
+  border: solid var(--bg);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg) translateY(-2px);
+}
+
+.item-card--selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.item-card--selected:hover {
+  border-color: var(--accent);
+}
+
+.items-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.items-header__bulk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* ── DETAIL PAGE ────────────────────────────────── */
 

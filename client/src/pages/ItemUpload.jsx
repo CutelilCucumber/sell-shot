@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../api';
 import Loader from '../components/Loader';
 import AiLoader from '../components/AiLoader';
+import { useAuth } from '../context/AuthContext';
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const { incrementOffloading, decrementOffloading } = useAuth();
   const fileInputRef = useRef(null);
 
   const [preview, setPreview] = useState(null);
@@ -114,11 +116,23 @@ export default function UploadPage() {
     }
   }
 
-  function handleManual() {
-    if (!itemId) return;
-    navigate(`/items/${itemId}/edit`, {
-      state: { justUploaded: true }
-    });
+  async function handleMultiple() {
+    if (!itemId || !images.length) return;
+    incrementOffloading();
+    setError(null);
+    // Reset form immediately so user can queue another
+    const imageUrls = images.map(img => img.url);
+    const currentItemId = itemId;
+    setItemId(null);
+    setImages([]);
+    setPreview(null);
+    try {
+      await api.identifyItem(currentItemId, imageUrls);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      decrementOffloading();
+    }
   }
 
   const ready = !!itemId && !loading;
@@ -223,12 +237,12 @@ export default function UploadPage() {
 
         <button
           className={`upload-action upload-action--manual ${ready ? '' : 'upload-action--disabled'}`}
-          onClick={handleManual}
+          onClick={handleMultiple}
           disabled={!ready || identifying}
         >
-          <span className="upload-action__icon">✎</span>
-          <span className="upload-action__label">List manually</span>
-          <span className="upload-action__sub">Fill in details yourself</span>
+          <span className="upload-action__icon">+</span>
+          <span className="upload-action__label">Add another</span>
+          <span className="upload-action__sub">Identify & queue more</span>
         </button>
       </div>
 
