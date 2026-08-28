@@ -124,7 +124,16 @@ export default function UploadPage() {
   const ready = !!itemId && !loading;
 
   return (
-    <main className="upload-page">
+    <>
+      {identifying && (
+        <div className="ai-overlay" role="status" aria-live="polite" aria-label="AI identifying item">
+          <div className="ai-overlay__content">
+            <AiLoader />
+            <p className="ai-overlay__text">Identifying your item...</p>
+          </div>
+        </div>
+      )}
+      <main className="upload-page">
       <div className="upload-page__header">
         <Link to="/items" className="detail-back">← My items</Link>
         <h1 className="upload-page__title">Add a new item</h1>
@@ -134,8 +143,8 @@ export default function UploadPage() {
       </div>
 
       <div className="upload-field">
-          <div className="form-section__title-row">
-            <h2 className="form-section__title">Images</h2>
+            <div className="form-section__title-row">
+              <h2 className="form-section__title">Images</h2>
               <button
                 type="button"
                 className={`btn btn--primary btn--sm ${images.length < 3 ? '' : 'upload-action--disabled'}`}
@@ -230,5 +239,6 @@ export default function UploadPage() {
         </div>
       )}
     </main>
-  );
+  </>
+);
 }
