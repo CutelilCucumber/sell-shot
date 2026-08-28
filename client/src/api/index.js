@@ -64,6 +64,8 @@ export const api = {
   getListings: (itemId) => request(`/items/${itemId}/listings`),
   createListing: (itemId, data) =>
     request(`/items/${itemId}/listings`, { method: 'POST', body: JSON.stringify(data) }),
+  updateListing: (itemId, listingId, data) =>
+    request(`/items/${itemId}/listings/${listingId}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateListingStatus: (itemId, listingId, status) =>
     request(`/items/${itemId}/listings/${listingId}/status`, {
       method: 'PUT', body: JSON.stringify({ status })
