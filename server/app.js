@@ -12,6 +12,8 @@ const listingsRouter = require('./routes/allListingsRouter');
 const marketplaceRouter = require('./routes/marketplaceRouter');
 const tagRouter = require('./routes/tagRouter');
 const adminRouter = require('./routes/adminRouter');
+const ebayAuthRouter = require('./routes/ebayAuthRouter');
+const ebayApiRouter = require('./routes/ebayApiRouter');
 const { verifyToken } = require('./middleware/auth');
 
 const app = express();
@@ -30,6 +32,8 @@ app.use('/api/items/:itemId/listings', listingRouter);
 app.use('/api/marketplaces', marketplaceRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/ebay', ebayAuthRouter);
+app.use('/api/ebay', ebayApiRouter);
 
 const clientDist = path.join(__dirname, '../client/dist');
 app.use(express.static(clientDist));

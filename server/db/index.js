@@ -4,5 +4,6 @@ module.exports = {
   ...require('./imageDb'),
   ...require('./listingDb'),
   ...require('./marketplaceDb'),
-  ...require('./tagDb')
+  ...require('./tagDb'),
+  ...require('./marketplaceAuthDb')
 };

@@ -1,4 +1,6 @@
 const db = require('../db');
+const EbayApiClient = require('../lib/ebayApi');
+const ebayAuth = require('../lib/ebayAuth');
 
 async function getAllListings(req, res) {
   try {
@@ -46,9 +48,44 @@ async function createListing(req, res) {
       return res.status(403).json({ error: 'Not authorised' });
     }
 
-    const listing = await db.createListing(itemId, { marketplaceId, title, description, listingPrice });
+    const marketplace = await db.getMarketplaceById(marketplaceId);
+    if (!marketplace) return res.status(404).json({ error: 'Marketplace not found' });
+
+    let listing;
+    let externalId = null;
+    let externalUrl = null;
+    let offerId = null;
+    let sku = null;
+
+    if (marketplace.type === 'API' && marketplace.slug === 'ebay') {
+      const marketplaceAuth = await db.getUserMarketplaceAuth(req.user.id, marketplaceId);
+      if (!marketplaceAuth) {
+        return res.status(400).json({ error: 'eBay not connected. Please connect your eBay account first.' });
+      }
+
+      const accessToken = await ebayAuth.getValidAccessToken(req.user.id, db);
+      const ebayClient = new EbayApiClient(accessToken);
+      const result = await ebayClient.createListingFromItem(item, marketplaceAuth, db);
+
+      listing = await db.createListing(itemId, {
+        marketplaceId,
+        title,
+        description,
+        listingPrice,
+        externalId: result.externalId,
+        externalUrl: result.externalUrl,
+        offerId: result.offerId,
+        sku: result.sku,
+        status: 'ACTIVE',
+        listedAt: new Date()
+      });
+    } else {
+      listing = await db.createListing(itemId, { marketplaceId, title, description, listingPrice });
+    }
+
     res.status(201).json({ listing });
   } catch (err) {
+    console.error('Create listing error:', err);
     res.status(500).json({ error: err.message });
   }
 }
@@ -61,9 +98,24 @@ async function updateListing(req, res) {
       return res.status(403).json({ error: 'Not authorised' });
     }
 
-    const updated = await db.updateListing(req.params.listingId, req.body);
+    const marketplace = await db.getMarketplaceById(listing.marketplaceId);
+    const updateData = { ...req.body };
+
+    if (marketplace && marketplace.type === 'API' && marketplace.slug === 'ebay') {
+      const marketplaceAuth = await db.getUserMarketplaceAuth(req.user.id, marketplace.id);
+      if (!marketplaceAuth) {
+        return res.status(400).json({ error: 'eBay not connected' });
+      }
+
+      const accessToken = await ebayAuth.getValidAccessToken(req.user.id, db);
+      const ebayClient = new EbayApiClient(accessToken);
+      await ebayClient.updateListing(listing.item, listing, marketplaceAuth, db);
+    }
+
+    const updated = await db.updateListing(req.params.listingId, updateData);
     res.json({ listing: updated });
   } catch (err) {
+    console.error('Update listing error:', err);
     res.status(500).json({ error: err.message });
   }
 }
@@ -83,9 +135,36 @@ async function updateStatus(req, res) {
       return res.status(403).json({ error: 'Not authorised' });
     }
 
+    const marketplace = await db.getMarketplaceById(listing.marketplaceId);
+
+    if (marketplace && marketplace.type === 'API' && marketplace.slug === 'ebay') {
+      const marketplaceAuth = await db.getUserMarketplaceAuth(req.user.id, marketplace.id);
+      if (!marketplaceAuth) {
+        return res.status(400).json({ error: 'eBay not connected' });
+      }
+
+      const accessToken = await ebayAuth.getValidAccessToken(req.user.id, db);
+      const ebayClient = new EbayApiClient(accessToken);
+
+      if (status === 'ACTIVE' && listing.status !== 'ACTIVE') {
+        if (listing.offerId) {
+          await ebayClient.publishOffer(listing.offerId);
+        }
+      } else if (status === 'SOLD' || status === 'REMOVED' || status === 'EXPIRED') {
+        if (listing.offerId) {
+          await ebayClient.endOffer(listing.offerId);
+        }
+      }
+    }
+
+    const updateData = { status };
+    if (status === 'ACTIVE') updateData.listedAt = new Date();
+    if (status === 'SOLD') updateData.soldAt = new Date();
+
     const updated = await db.updateListingStatus(req.params.listingId, status);
     res.json({ listing: updated });
   } catch (err) {
+    console.error('Update status error:', err);
     res.status(500).json({ error: err.message });
   }
 }
@@ -98,9 +177,21 @@ async function deleteListing(req, res) {
       return res.status(403).json({ error: 'Not authorised' });
     }
 
+    const marketplace = await db.getMarketplaceById(listing.marketplaceId);
+
+    if (marketplace && marketplace.type === 'API' && marketplace.slug === 'ebay') {
+      const marketplaceAuth = await db.getUserMarketplaceAuth(req.user.id, marketplace.id);
+      if (marketplaceAuth && listing.offerId) {
+        const accessToken = await ebayAuth.getValidAccessToken(req.user.id, db);
+        const ebayClient = new EbayApiClient(accessToken);
+        await ebayClient.endListing(listing, marketplaceAuth, db);
+      }
+    }
+
     await db.deleteListing(req.params.listingId);
     res.json({ message: 'Listing deleted' });
   } catch (err) {
+    console.error('Delete listing error:', err);
     res.status(500).json({ error: err.message });
   }
 }

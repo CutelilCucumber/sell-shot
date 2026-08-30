@@ -75,4 +75,10 @@ export const api = {
 
   // marketplaces
   getMarketplaces: () => request('/marketplaces'),
+
+  // eBay
+  getEbayAuthUrl: () => request('/ebay/connect'),
+  getEbayStatus: () => request('/ebay/status'),
+  disconnectEbay: () => request('/ebay/disconnect', { method: 'DELETE' }),
+  handleEbayCallback: (code) => request(`/ebay/callback?code=${code}`)
 };

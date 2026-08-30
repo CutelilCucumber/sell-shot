@@ -38,12 +38,16 @@ export default function ItemDetail() {
   const [selectedMarketplace, setSelectedMarketplace] = useState(null);
   const [copiedField, setCopiedField] = useState(null);
   const [existingEbayListing, setExistingEbayListing] = useState(null);
+  const [ebayConnected, setEbayConnected] = useState(false);
+  const [ebayLoading, setEbayLoading] = useState(true);
+  const [connectingEbay, setConnectingEbay] = useState(false);
 
   useEffect(() => {
-    Promise.all([api.getItem(id), api.getMarketplaces()])
-      .then(([itemData, mpData]) => {
+    Promise.all([api.getItem(id), api.getMarketplaces(), api.getEbayStatus()])
+      .then(([itemData, mpData, ebayStatus]) => {
         setItem(itemData.item);
         setMarketplaces(mpData.marketplaces);
+        setEbayConnected(ebayStatus.connected);
         const primary = itemData.item.images?.find(i => i.isPrimary) || itemData.item.images?.[0];
         setActiveImage(primary || null);
 
@@ -75,7 +79,10 @@ export default function ItemDetail() {
         }
       })
       .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setEbayLoading(false);
+      });
   }, [id]);
 
   function handleMarketplaceChange(e) {
@@ -85,12 +92,30 @@ export default function ItemDetail() {
     setListForm(f => ({ ...f, marketplaceId: mpId }));
   }
 
+  async function handleConnectEbay() {
+    setConnectingEbay(true);
+    try {
+      const { authUrl } = await api.getEbayAuthUrl();
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error(err);
+      alert(err.message || 'Failed to connect eBay');
+    } finally {
+      setConnectingEbay(false);
+    }
+  }
+
   async function handleCreateListing(e) {
     e.preventDefault();
     if (!selectedMarketplace) return;
 
     if (selectedMarketplace.type === 'TEMPLATE') {
       window.open(selectedMarketplace.listingUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (!ebayConnected) {
+      await handleConnectEbay();
       return;
     }
 
@@ -132,6 +157,9 @@ export default function ItemDetail() {
   if (loading) return <Loader />;
   if (error) return <div className="page-status page-status--error">{error}</div>;
   if (!item) return <div className="page-status">Item not found.</div>;
+
+  // Find eBay marketplace for display
+  const ebayMarketplace = marketplaces.find(mp => mp.type === 'API');
 
   return (
     <main className="general-page">
@@ -226,6 +254,21 @@ export default function ItemDetail() {
                 </select>
               </div>
 
+              {ebayMarketplace && !ebayConnected && (
+                <div className="ebay-connect-notice">
+                  <p className="ebay-connect-notice__text">
+                    <strong>eBay not connected.</strong> Connect your eBay account to create listings via API.
+                  </p>
+                  <button
+                    className="btn btn--primary btn--sm"
+                    onClick={handleConnectEbay}
+                    disabled={connectingEbay || ebayLoading}
+                  >
+                    {connectingEbay ? 'Connecting...' : 'Connect eBay Account'}
+                  </button>
+                </div>
+              )}
+
               <div className="list-form__group">
                 <div className="list-form__label-row">
                   <label className="list-form__label">Title</label>
@@ -287,11 +330,13 @@ export default function ItemDetail() {
                     ? `Opens ${selectedMarketplace.name} in a new tab — you'll need to re-upload photos and complete the listing there.`
                     : existingEbayListing
                       ? 'Updates the existing eBay listing.'
-                      : 'Creates the listing on eBay via API.'}
+                      : ebayConnected
+                        ? 'Creates the listing on eBay via API.'
+                        : 'Connect eBay first to create listings via API.'}
                 </p>
               )}
 
-              <button className="btn btn--primary" type="submit" disabled={listing || !listForm.marketplaceId}>
+              <button className="btn btn--primary" type="submit" disabled={listing || !listForm.marketplaceId || (selectedMarketplace?.type === 'API' && !ebayConnected)}>
                 {listing
                   ? 'Saving...'
                   : !listForm.marketplaceId
@@ -300,7 +345,9 @@ export default function ItemDetail() {
                       ? `Open ${selectedMarketplace.name} Listing Page`
                       : existingEbayListing
                         ? 'Update eBay Listing'
-                        : 'Create eBay Listing'}
+                        : ebayConnected
+                          ? 'Create eBay Listing'
+                          : 'Connect eBay First'}
               </button>
             </form>
           </div>
