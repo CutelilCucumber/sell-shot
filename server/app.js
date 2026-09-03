@@ -1,4 +1,5 @@
 require('dotenv').config({ path: '../.env' });
+const path = require('path');
 const express = require("express");
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
@@ -15,7 +16,8 @@ const { verifyToken } = require('./middleware/auth');
 
 const app = express();
 
-app.use(cors({ origin: ['http://localhost:5173'] }));
+const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173'];
+app.use(cors({ origin: corsOrigin }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,12 +31,21 @@ app.use('/api/marketplaces', marketplaceRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/admin', adminRouter);
 
+const clientDist = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDist));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(clientDist, 'index.html'), (err) => {
+    if (err) next(err);
+  });
+});
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.statusCode || 500).send(err.message);
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, (error) => {
     if (error) {
         throw error;
