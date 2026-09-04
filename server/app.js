@@ -18,7 +18,7 @@ const { verifyToken } = require('./middleware/auth');
 
 const app = express();
 
-const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173'];
+const corsOrigin = ['http://localhost:5173', "https://sellshot.briansonderen.com"];
 app.use(cors({ origin: corsOrigin }));
 
 app.use(express.json());
