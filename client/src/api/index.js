@@ -1,4 +1,4 @@
-const BASE = 'http://sellshot.briansonderen.com/';
+const BASE = import.meta.env.VITE_API_URL || '/api';
 
 function getToken() {
   return localStorage.getItem('token');
